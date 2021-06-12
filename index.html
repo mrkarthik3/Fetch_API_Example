@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script> -->
+    <title>Fetch API Sandbox</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="display-4 mb-4">Fetch API Sandbox</h1>
+        <div class="d-flex">
+            <button class="btn btn-primary mr-3" id="getText">Get Text</button>
+            <button class="btn btn-success mr-3" id="getUsers">Get JSON</button>
+            <button class="btn btn-warning mr-3" id="getPosts">Get API DATA</button>
+        </div>
+        <hr>
+        <div id="output">
+            <form id="addPost">
+                <div class="form-group">
+                    <input type="text" placeholder="Title" id="title" class="form-control">
+                </div>
+                <div class="form-group">
+                    <textarea id="body" placeholder="Body" rows="10" class="form-control"></textarea>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-secondary">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('getText').addEventListener('click', getText);
+        document.getElementById('getUsers').addEventListener('click', getUsers);
+        document.getElementById('getPosts').addEventListener('click', getPosts);
+        document.getElementById('addPost').addEventListener('submit', addPost);
+
+        function getText() {
+            // getText get fetches data from a text file.
+
+            /*
+            fetch('sample.txt').then(function (res) {
+                return res.text();
+                // As this is text file, I am returning the text.
+                // If response is JSON, then use return res.json()
+            }).then(function (data) {
+                console.log(data);
+            })
+            */
+
+            // Using arrow functions makes above code simple.
+
+            /*
+            fetch('sample.txt')
+                .then(res => res.text())
+                .then(data => console.log(data));
+            */
+
+            fetch('sample.txt')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById('output').innerHTML = data;
+                })
+                .catch((err) => console.log(err))
+
+        }
+
+        function getUsers() {
+            fetch('users.json')
+                .then(res => res.json())
+                .then(data => {
+                    let output = '<h2 class="mb-4">Users</h2>';
+                    data.forEach(user => {
+                        output += ` 
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item">ID: ${user.id}</li>
+                        <li class="list-group-item">Name: ${user.name}</li>
+                        <li class="list-group-item">Email: ${user.email}</li>
+                    </ul>
+                    `
+                    });
+                    document.getElementById('output').innerHTML = output;
+                })
+        }
+        function getPosts() {
+            fetch('https://jsonplaceholder.typicode.com/posts')
+                .then(res => res.json())
+                .then(data => {
+                    let output = '<h2 class="mb-4">Posts</h2>';
+                    data.forEach(post => {
+                        output += ` 
+                    <div class='card card-body mb-3'>
+                        <h3>${post.title}</h3>
+                        <p>${post.body}</p>
+                    </div>
+                    `
+                    });
+                    document.getElementById('output').innerHTML = output;
+                })
+        }
+
+        // A Standard POST request using Fetch API
+        function addPost(ev) {
+            ev.preventDefault();
+
+            let title = document.getElementById('title').value;
+            let body = document.getElementById('body').value;
+
+            fetch('https://jsonplaceholder.typicode.com/posts', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-type': 'application/json'
+                },
+
+                //JSON.stringify converts normal object to JSON object
+                body: JSON.stringify({ title: title, body: body })
+            })
+                .then(res => {
+                    res.json()
+                    console.log(res);
+                })
+                .then(data => console.log(data))
+        }
+
+    </script>
+</body>
+
+</html>
